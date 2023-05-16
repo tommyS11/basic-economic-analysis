@@ -1,0 +1,63 @@
+#install.packages("shiny")
+
+library(shiny)
+
+# Define the user interface (UI)
+ui <- fluidPage(
+  titlePanel("Economic Scenario Analysis"),
+  
+  sidebarLayout(
+    sidebarPanel(
+      # Input for selecting economic scenarios
+      selectInput("scenario", "Select Scenario",
+                  choices = c("Scenario 1", "Scenario 2", "Scenario 3"),
+                  selected = "Scenario 1"),
+      
+      # Input for entering economic data
+      numericInput("gdp", "GDP (in billions)", value = 100),
+      numericInput("inflation", "Inflation Rate (%)", value = 2),
+      
+      # Button to trigger analysis
+      actionButton("analyze", "Analyze")
+    ),
+    
+    mainPanel(
+      # Output for displaying analysis results
+      textOutput("result")
+    )
+  )
+)
+
+# Define the server logic
+server <- function(input, output) {
+  # Perform analysis when the "Analyze" button is clicked
+  observeEvent(input$analyze, {
+    scenario <- input$scenario
+    gdp <- input$gdp
+    inflation <- input$inflation
+    
+    # Perform calculations based on selected scenario and input values
+    # You can add your own custom calculations here
+    
+    # Example calculation: GDP growth rate
+    growth_rate <- if (scenario == "Scenario 1") {
+      0.05
+    } else if (scenario == "Scenario 2") {
+      0.03
+    } else {
+      0.02
+    }
+    
+    projected_gdp <- gdp * (1 + growth_rate)
+    inflation_adjusted_gdp <- projected_gdp / (1 + inflation/100)
+    
+    # Display the analysis results
+    output$result <- renderText({
+      paste("Projected GDP:", projected_gdp)
+      paste("Inflation-adjusted GDP:", inflation_adjusted_gdp)
+    })
+  })
+}
+
+# Run the Shiny application
+shinyApp(ui, server)
